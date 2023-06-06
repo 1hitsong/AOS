@@ -1,4 +1,4 @@
-<h1 align="center">AOS (<em>Ace of Spades</em>)</h1>
+<h1 align="center">♠️ AOS <em>(Ace of Spades)</em></h1>
 <h3 align="center">A React Native Lemmy client</h3>
 
 ---
