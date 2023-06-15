@@ -2,6 +2,7 @@ import { StyleSheet, SafeAreaView, FlatList, View } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import PostCard from '../PostCard';
+import Comment from './components/Comment';
 import Markdown from '@jonasmerlin/react-native-markdown-display';
 
 const Item = (comment) => (
@@ -30,6 +31,8 @@ export default function SinglePost({navigation, route}) {
 
     setComments(postComments)
   }
+
+  const renderComment = ({ item }) => <Comment comment={item} />;
   
   return (
     <SafeAreaView style={styles.container}>
@@ -39,7 +42,7 @@ export default function SinglePost({navigation, route}) {
             return (<PostCard key={post.post.id} data={post} />)
           }}
           data={comments.comments}
-          renderItem={({item}) => <Item data={item} />}
+          renderItem={renderComment}
           keyExtractor={item => item.comment.id}
         />
       }
