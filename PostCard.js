@@ -16,6 +16,9 @@ export default function PostCard(props) {
   const postData = props.data
   let client = props.client
   let postContent
+
+  if (!postData) return
+  if (!postData.post) return
   
   if (postData.post.body) {
     postContent = <Markdown rules={markdownRules} style={styles.markdown}>{truncate(postData.post.body)}</Markdown>

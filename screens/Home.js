@@ -1,37 +1,109 @@
-import { StyleSheet, Text, SafeAreaView, ScrollView, Pressable } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import { StyleSheet, View, Button, SafeAreaView, ScrollView, Pressable, FlatList } from 'react-native';
+import React,  { useState, useEffect } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import PostCard from '../PostCard';
+import { Skeleton, LinearGradient, BottomSheet, ListItem } from '@rneui/themed';
 
 export default function Home({navigation, route}) {
   let client = route.params.client
 
   const [posts, setPosts] = useState();
+  const [isVisible, setIsVisible] = useState(false);
+  const [sortOption, setSortOption] = useState('Active');
+  const [page, setPage] = useState(1);
+
+  const sortList = [
+    { title: 'Active', onPress: () => changeSort(`Active`) },
+    { title: 'Hot', onPress: () => changeSort(`Hot`) },
+    { title: 'Most Comments', onPress: () => changeSort(`MostComments`) },
+    { title: 'New', onPress: () => changeSort(`New`) },
+    { title: 'New Comments', onPress: () => changeSort(`NewComments`) },
+    { title: 'Old', onPress: () => changeSort(`Old`) },
+    { title: 'Top All', onPress: () => changeSort(`TopAll`) },
+    { title: 'Top Day', onPress: () => changeSort(`TopDay`) },
+    { title: 'Top Week', onPress: () => changeSort(`TopWeek`) },
+    { title: 'Top Month', onPress: () => changeSort(`TopMonth`) },
+    { title: 'Top Year', onPress: () => changeSort(`TopYear`) },
+  ];
+
+  const toggleSortDrawer = () => {
+    setIsVisible(!isVisible)
+  }
+
+  const changeSort = (newSortOption) => {
+    setSortOption(newSortOption)
+    setPosts({})
+    fetchPosts(newSortOption)
+    toggleSortDrawer()
+  }
 
   useEffect(() => {
     fetchPosts();
+    route.params.toggleSortDrawer = toggleSortDrawer
   }, []);
 
-  const fetchPosts = async () => {
+  const fetchMore = async () => {
     let sitePosts = await client.getPosts({
       auth: await SecureStore.getItemAsync('server_jwt'),
       type_: `Local`,
-      sort: 'Active',
-      limit: 25
+      sort: sortOption,
+      limit: 25,
+      page: page+1
+    })
+    setPage(page+1)
+
+    setPosts([...posts, ...sitePosts.posts])
+  }
+
+  const fetchPosts = async (selectedSortOption = sortOption) => {
+    let sitePosts = await client.getPosts({
+      auth: await SecureStore.getItemAsync('server_jwt'),
+      type_: `Local`,
+      sort: selectedSortOption,
+      limit: 25,
     })
 
-    setPosts(sitePosts)
+    setPosts(sitePosts.posts)
   }
   
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollView}>
-      {posts && posts.posts && posts.posts.map(post => (
-        <Pressable key={post.post.id} onPress={ () => navigation.navigate('SinglePostScreen', {client: client, post: post}) }>
-          <PostCard data={post} client={client} />
-        </Pressable>
+      {
+      (!posts) ?
+        <View style={styles.loadingIcon}>
+          <Skeleton
+            LinearGradientComponent={LinearGradient}
+            animation="wave"
+            width={80}
+            height={40}
+          />
+        </View>
+      :
+        <FlatList 
+        onEndReached={fetchMore}
+        onEndReachedThreshold={0.1}
+        style={styles.scrollView}
+        keyExtractor={(post) => post.id}
+        data={posts}
+        renderItem={(post) => {
+          return (
+            <Pressable key={post.item.id} onPress={ () => navigation.navigate('SinglePostScreen', {client: client, post: post.item}) }>
+              <PostCard data={post.item} client={client} />
+            </Pressable>
+          )
+        }}
+        ></FlatList>
+      }
+
+      <BottomSheet backdropStyle={styles.backDrop} isVisible={isVisible} onBackdropPress={() => setIsVisible(false)}>
+        {sortList.map((l, i) => (
+          <ListItem key={i} containerStyle={l.containerStyle} onPress={l.onPress}>
+            <ListItem.Content>
+              <ListItem.Title style={l.titleStyle}>{l.title}</ListItem.Title>
+            </ListItem.Content>
+          </ListItem>
         ))}
-      </ScrollView>
+      </BottomSheet>
     </SafeAreaView>
 );
 }
@@ -44,4 +116,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingTop: 0,
   },
+  loadingIcon: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 30
+  },
+  backDrop: {
+    backgroundColor: `rgba(0,0,0,.8)`
+  },
+  button: {
+    margin: 10,
+  }
 });
