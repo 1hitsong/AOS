@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, Image } from 'react-native';
+import React, { useState, memo } from 'react';
+import { StyleSheet, View, Text, Image, Pressable } from 'react-native';
 import { Card, Icon } from '@rneui/themed';
 import Markdown from '@jonasmerlin/react-native-markdown-display';
 import * as SecureStore from 'expo-secure-store';
@@ -12,9 +12,12 @@ const markdownRules = {
       • {children}</Text>
 };
 
-export default function PostCard(props) {
+export default memo(PostCard);
+
+function PostCard(props) {
   const postData = props.data
   let client = props.client
+  let navigation = props.navigation
   let postContent
 
   if (!postData) return
@@ -59,7 +62,7 @@ export default function PostCard(props) {
   const downVoteIconColor = (postVote === -1) ? `#3498db` : `#eee`
   
   return (
-    <React.Fragment key={postData.post.id}>
+    <Pressable key={postData.post.id} onPress={ () => navigation.navigate('SinglePostScreen', {client: client, post: postData}) }>
       <Card containerStyle={styles.container}>
         <View style={{flexDirection:'row', alignItems:'center'}}>
           { postData.community.icon &&
@@ -104,7 +107,7 @@ export default function PostCard(props) {
           <Icon name='share' type='MaterialIcons' color='#eee' />
         </View>
       </Card>
-    </React.Fragment>
+    </Pressable>
   );
 }
 

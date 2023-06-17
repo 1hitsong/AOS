@@ -1,8 +1,9 @@
-import { StyleSheet, View, Button, SafeAreaView, ScrollView, Pressable, FlatList } from 'react-native';
+import { StyleSheet, View, SafeAreaView, Dimensions } from 'react-native';
 import React,  { useState, useEffect } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import PostCard from '../PostCard';
 import { Skeleton, LinearGradient, BottomSheet, ListItem } from '@rneui/themed';
+import { FlashList } from "@shopify/flash-list";
 
 export default function Home({navigation, route}) {
   let client = route.params.client
@@ -38,32 +39,54 @@ export default function Home({navigation, route}) {
   }
 
   useEffect(() => {
-    fetchPosts();
+    const initLoadPosts = async () => {
+      const initPosts = await fetchPosts()
+      setPosts(initPosts.posts)
+    }
+
+    initLoadPosts()
     route.params.toggleSortDrawer = toggleSortDrawer
   }, []);
 
   const fetchMore = async () => {
-    let sitePosts = await client.getPosts({
-      auth: await SecureStore.getItemAsync('server_jwt'),
-      type_: `Local`,
-      sort: sortOption,
-      limit: 25,
-      page: page+1
-    })
-    setPage(page+1)
+    let sitePosts
 
-    setPosts([...posts, ...sitePosts.posts])
+    try {
+      sitePosts = await client.getPosts({
+        auth: await SecureStore.getItemAsync('server_jwt'),
+        type_: `Local`,
+        sort: sortOption,
+        limit: 25,
+        page: page+1
+      })
+      
+      setPage(page+1)
+
+      setPosts((m) => {
+        return m.concat(sitePosts.posts);
+      });
+    }
+    catch(e) {
+      console.log(`Error Loading More Posts`)
+    }
   }
 
   const fetchPosts = async (selectedSortOption = sortOption) => {
-    let sitePosts = await client.getPosts({
-      auth: await SecureStore.getItemAsync('server_jwt'),
-      type_: `Local`,
-      sort: selectedSortOption,
-      limit: 25,
-    })
+    try {
+      return client.getPosts({
+        auth: await SecureStore.getItemAsync('server_jwt'),
+        type_: `Local`,
+        sort: selectedSortOption,
+        limit: 25,
+      })
+    }
+    catch(e) {
+      console.log(`Error Loading Posts`)
+    }
+  }
 
-    setPosts(sitePosts.posts)
+  const _renderitem = (post) => {
+    return <PostCard data={post.item} navigation={navigation} client={client} />
   }
   
   return (
@@ -79,20 +102,15 @@ export default function Home({navigation, route}) {
           />
         </View>
       :
-        <FlatList 
-        onEndReached={fetchMore}
-        onEndReachedThreshold={0.1}
-        style={styles.scrollView}
-        keyExtractor={(post) => post.id}
-        data={posts}
-        renderItem={(post) => {
-          return (
-            <Pressable key={post.item.id} onPress={ () => navigation.navigate('SinglePostScreen', {client: client, post: post.item}) }>
-              <PostCard data={post.item} client={client} />
-            </Pressable>
-          )
-        }}
-        ></FlatList>
+        <View style={{height: Dimensions.get("screen").height-130, width: Dimensions.get("screen").width}}>
+          <FlashList 
+          onEndReached={fetchMore}
+          onEndReachedThreshold={0.1}
+          style={styles.scrollView}
+          data={posts}
+          estimatedItemSize={200}
+          renderItem={_renderitem} />
+        </View>
       }
 
       <BottomSheet backdropStyle={styles.backDrop} isVisible={isVisible} onBackdropPress={() => setIsVisible(false)}>
