@@ -1,5 +1,5 @@
 import React, { useState, memo } from 'react';
-import { StyleSheet, View, Text, Image, Pressable, Modal } from 'react-native';
+import { StyleSheet, View, Text, Image, Pressable, Modal, Share } from 'react-native';
 import { Card, Icon } from '@rneui/themed';
 import Markdown from '@jonasmerlin/react-native-markdown-display';
 import * as SecureStore from 'expo-secure-store';
@@ -84,6 +84,18 @@ function PostCard(props) {
     }
   }
 
+  const onShare = async () => {
+    try {
+      const result = await Share.share({
+        message: `${postData.post.name}\n\n${postData.post.url}`,
+        title: postData.post.name,
+        url: postData.post.url,
+      });
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
   const titleContainerType = (postData.post.body && postData.post.thumbnail_url) ? styles.titleShareWidth : styles.titleFullWidth
 
   const upVoteIconColor = (postVote === 1) ? `#3498db` : `#eee`
@@ -159,10 +171,10 @@ function PostCard(props) {
           <View style={styles.actions}>
             <Icon onPress={() => onVote(1)} name='thumb-up' type='MaterialIcons' color={upVoteIconColor} />
             <Icon onPress={() => onVote(-1)} name='thumb-down' type='MaterialIcons' color={downVoteIconColor} />
-            <Icon onPress={() => onFavorite()} name='bookmark' type='MaterialIcons' color={favoriteIconColor} />
+            <Icon onPress={onFavorite} name='bookmark' type='MaterialIcons' color={favoriteIconColor} />
             <Icon name='comment' type='MaterialIcons' color='#eee' />
             <Icon name='content-copy' type='MaterialIcons' color='#eee' />
-            <Icon name='share' type='MaterialIcons' color='#eee' />
+            <Icon onPress={onShare} name='share' type='MaterialIcons' color='#eee' />
           </View>
         </Card>
       </Pressable>
