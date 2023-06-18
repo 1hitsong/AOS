@@ -1,5 +1,5 @@
 import React, { useState, memo } from 'react';
-import { StyleSheet, View, Text, Image, Pressable } from 'react-native';
+import { StyleSheet, View, Text, Image, Pressable, Modal } from 'react-native';
 import { Card, Icon } from '@rneui/themed';
 import Markdown from '@jonasmerlin/react-native-markdown-display';
 import * as SecureStore from 'expo-secure-store';
@@ -72,59 +72,101 @@ function PostCard(props) {
     }
   };
 
+  const blockCommunity = async (communityID) => {
+    try {
+      await client.blockCommunity({
+        auth: await SecureStore.getItemAsync('server_jwt'),
+        community_id: communityID,
+        block: true
+      });
+    } catch(e) {
+      return;
+    }
+  }
+
   const titleContainerType = (postData.post.body && postData.post.thumbnail_url) ? styles.titleShareWidth : styles.titleFullWidth
 
   const upVoteIconColor = (postVote === 1) ? `#3498db` : `#eee`
   const downVoteIconColor = (postVote === -1) ? `#3498db` : `#eee`
   const favoriteIconColor = (isFavorite) ? `#3498db` : `#eee`
+
+  const [modalVisible, setModalVisible] = useState(false);
   
   return (
-    <Pressable key={postData.post.id} onPress={ () => navigation.navigate('SinglePostScreen', {client: client, post: postData}) }>
-      <Card containerStyle={styles.container}>
-        <View style={{flexDirection:'row', alignItems:'center'}}>
-          { postData.community.icon &&
-            <Image
-              style={styles.image}
-              resizeMode="cover"
-              source={{ uri: postData.community.icon }}
-            />
-          }
-          <Text style={styles.community}>{postData.community.name}</Text>
-        </View>
-
-        <View style={{flexDirection:'row', alignItems:'flex-start'}}>
-          <View style={titleContainerType}>
-            <Card.Title style={styles.title}>{postData.post.name}</Card.Title>
+    <View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert('Modal has been closed.');
+          setModalVisible(!modalVisible);
+        }}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Hello World!</Text>
+            <Pressable
+              style={[styles.button, styles.buttonClose]}
+              onPress={() => blockCommunity(postData.community.id)}>
+              <Text style={styles.textStyle}>Block Community</Text>
+            </Pressable>
+            <Pressable
+              style={[styles.button, styles.buttonClose]}
+              onPress={() => setModalVisible(!modalVisible)}>
+              <Text style={styles.textStyle}>Hide Modal</Text>
+            </Pressable>
           </View>
-          { postData.post.body && postData.post.thumbnail_url &&
-            <View style={styles.thumbnailContainer}>
-              <Image
-                style={styles.thumbnail}
-                resizeMode="cover"
-                source={{ uri: postData.post.thumbnail_url }}
-              />
+        </View>
+      </Modal>
+      <Pressable key={postData.post.id} onPress={ () => navigation.navigate('SinglePostScreen', {client: client, post: postData}) }>
+        <Card containerStyle={styles.container}>
+          <View style={{flexDirection:'row', alignItems:'center'}}>
+            { postData.community.icon &&
+              <Pressable onLongPress={ () => setModalVisible(true) }>
+                <Image
+                  style={styles.image}
+                  resizeMode="cover"
+                  source={{ uri: postData.community.icon }}
+                />
+              </Pressable>
+            }
+            <Text style={styles.community}>{postData.community.name}</Text>
+          </View>
+
+          <View style={{flexDirection:'row', alignItems:'flex-start'}}>
+            <View style={titleContainerType}>
+              <Card.Title style={styles.title}>{postData.post.name}</Card.Title>
             </View>
-          }
-        </View>
-        
-        <View style={styles.counts}>
-          <Text style={styles.score}>{postData.counts.score}</Text>
-          <Text style={styles.dot}>•</Text>
-          <Text style={styles.comments}>{postData.counts.comments} comments</Text>
-        </View>
+            { postData.post.body && postData.post.thumbnail_url &&
+              <View style={styles.thumbnailContainer}>
+                <Image
+                  style={styles.thumbnail}
+                  resizeMode="cover"
+                  source={{ uri: postData.post.thumbnail_url }}
+                />
+              </View>
+            }
+          </View>
+          
+          <View style={styles.counts}>
+            <Text style={styles.score}>{postData.counts.score}</Text>
+            <Text style={styles.dot}>•</Text>
+            <Text style={styles.comments}>{postData.counts.comments} comments</Text>
+          </View>
 
-        {postContent}
+          {postContent}
 
-        <View style={styles.actions}>
-          <Icon onPress={() => onVote(1)} name='thumb-up' type='MaterialIcons' color={upVoteIconColor} />
-          <Icon onPress={() => onVote(-1)} name='thumb-down' type='MaterialIcons' color={downVoteIconColor} />
-          <Icon onPress={() => onFavorite()} name='bookmark' type='MaterialIcons' color={favoriteIconColor} />
-          <Icon name='comment' type='MaterialIcons' color='#eee' />
-          <Icon name='content-copy' type='MaterialIcons' color='#eee' />
-          <Icon name='share' type='MaterialIcons' color='#eee' />
-        </View>
-      </Card>
-    </Pressable>
+          <View style={styles.actions}>
+            <Icon onPress={() => onVote(1)} name='thumb-up' type='MaterialIcons' color={upVoteIconColor} />
+            <Icon onPress={() => onVote(-1)} name='thumb-down' type='MaterialIcons' color={downVoteIconColor} />
+            <Icon onPress={() => onFavorite()} name='bookmark' type='MaterialIcons' color={favoriteIconColor} />
+            <Icon name='comment' type='MaterialIcons' color='#eee' />
+            <Icon name='content-copy' type='MaterialIcons' color='#eee' />
+            <Icon name='share' type='MaterialIcons' color='#eee' />
+          </View>
+        </Card>
+      </Pressable>
+    </View>
   );
 }
 
@@ -222,5 +264,42 @@ const styles = StyleSheet.create({
   thumbnailContainer: {
     justifyContent: 'flex-start',
     width: '15%'
-  }
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: '#F194FF',
+  },
+  buttonClose: {
+    backgroundColor: '#2196F3',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
 });
