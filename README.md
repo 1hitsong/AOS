@@ -1,6 +1,14 @@
-<h1 align="center">♠️ AOS <em>(Ace of Spades)</em></h1>
-<h3 align="center">A React Native Lemmy client</h3>
-<h3 align="center">WIP! This is not usable right now.</h3>
+<p align="center">
+    <a href="https://github.com/1hitsong/AOS">
+        <img height="175" width="175" alt="AOS" src="https://raw.githubusercontent.com/1hitsong/AOS/master/assets/icon.png"/>
+    </a>
+</p>
+<div align="center">
+<h1 style="border:0;margin-bottom:0">AOS</h1>
+<p style="border-bottom:1px solid #555;width:300px"><em>(Ace of Spades)</em></p>
+<h3>A React Native Lemmy client</h3>
+<h4>WIP! You can try using it, just don't get mad if something doesn't work correctly.</h3>
+</div>
 
 ---
 <p align="center">
