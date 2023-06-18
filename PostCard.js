@@ -74,10 +74,13 @@ function PostCard(props) {
 
   const blockCommunity = async (communityID) => {
     try {
-      await client.blockCommunity({
+      client.blockCommunity({
         auth: await SecureStore.getItemAsync('server_jwt'),
         community_id: communityID,
         block: true
+      }).
+      then( () => {
+        setModalVisible(false)
       });
     } catch(e) {
       return;
@@ -92,7 +95,7 @@ function PostCard(props) {
         url: postData.post.url,
       });
     } catch (error) {
-      console.log(error.message);
+      alert(error.message);
     }
   };
 
