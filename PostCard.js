@@ -40,6 +40,22 @@ function PostCard(props) {
   }
 
   const [postVote, setPostVote] = useState(postData.my_vote);
+  const [isFavorite, setIsFavorite] = useState(postData.saved);
+
+  const onFavorite = async () => {
+    try {
+      await client.savePost({
+        auth: await SecureStore.getItemAsync('server_jwt'),
+        post_id: postData.post.id,
+        save: !isFavorite
+      })
+
+      setIsFavorite(!isFavorite)
+    } catch(e) {
+      console.log(`Error`, e)
+      return;
+    }
+  };
 
   const onVote = async (value) => {
     if (postVote === value) { value = 0 }
@@ -60,6 +76,7 @@ function PostCard(props) {
 
   const upVoteIconColor = (postVote === 1) ? `#3498db` : `#eee`
   const downVoteIconColor = (postVote === -1) ? `#3498db` : `#eee`
+  const favoriteIconColor = (isFavorite) ? `#3498db` : `#eee`
   
   return (
     <Pressable key={postData.post.id} onPress={ () => navigation.navigate('SinglePostScreen', {client: client, post: postData}) }>
@@ -101,7 +118,7 @@ function PostCard(props) {
         <View style={styles.actions}>
           <Icon onPress={() => onVote(1)} name='thumb-up' type='MaterialIcons' color={upVoteIconColor} />
           <Icon onPress={() => onVote(-1)} name='thumb-down' type='MaterialIcons' color={downVoteIconColor} />
-          <Icon name='bookmark' type='MaterialIcons' color='#eee' />
+          <Icon onPress={() => onFavorite()} name='bookmark' type='MaterialIcons' color={favoriteIconColor} />
           <Icon name='comment' type='MaterialIcons' color='#eee' />
           <Icon name='content-copy' type='MaterialIcons' color='#eee' />
           <Icon name='share' type='MaterialIcons' color='#eee' />
