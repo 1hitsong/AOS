@@ -1,4 +1,4 @@
-import { StyleSheet, View, SafeAreaView, Dimensions } from 'react-native';
+import { StyleSheet, View, SafeAreaView, Dimensions, Alert } from 'react-native';
 import React,  { useState, useEffect } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import PostCard from '../PostCard';
@@ -31,10 +31,12 @@ export default function Home({navigation, route}) {
     setIsVisible(!isVisible)
   }
 
-  const changeSort = (newSortOption) => {
+  const changeSort = async (newSortOption) => {
     setSortOption(newSortOption)
-    setPosts({})
-    fetchPosts(newSortOption)
+
+    const initPosts = await fetchPosts(newSortOption)
+    setPosts(initPosts.posts)
+
     toggleSortDrawer()
   }
 
@@ -49,25 +51,24 @@ export default function Home({navigation, route}) {
   }, []);
 
   const fetchMore = async () => {
-    let sitePosts
-
     try {
-      sitePosts = await client.getPosts({
+      client.getPosts({
         auth: await SecureStore.getItemAsync('server_jwt'),
         type_: `Local`,
         sort: sortOption,
         limit: 25,
         page: page+1
+      }).
+      then((sitePosts) => {
+        setPosts((m) => {
+          return m.concat(sitePosts.posts);
+        });
       })
       
       setPage(page+1)
-
-      setPosts((m) => {
-        return m.concat(sitePosts.posts);
-      });
     }
     catch(e) {
-      console.log(`Error Loading More Posts`)
+      Alert(`Error Loading More Posts`, e)
     }
   }
 
@@ -105,7 +106,7 @@ export default function Home({navigation, route}) {
         <View style={{height: Dimensions.get("screen").height-130, width: Dimensions.get("screen").width}}>
           <FlashList 
           onEndReached={fetchMore}
-          onEndReachedThreshold={0.1}
+          onEndReachedThreshold={0.2}
           style={styles.scrollView}
           data={posts}
           estimatedItemSize={200}
