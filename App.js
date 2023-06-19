@@ -1,8 +1,7 @@
 import React from 'react';
-import { NavigationContainer, navigation } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
-import { Button } from 'react-native';
 import { Icon } from '@rneui/themed';
 
 import Home from './screens/Home';
@@ -38,7 +37,10 @@ export default function App() {
           component={Home}
           options={({ navigation, route }) => ({
             headerRight: () => (
-              <Icon name='sort' type='MaterialIcons' color='#eee' onPress={() => route.params.toggleSortDrawer() } />
+              <>
+                <Icon name='filter-list' type='MaterialIcons' color='#eee' onPress={() => route.params.toggleFilterDrawer() } />
+                <Icon name='sort' type='MaterialIcons' color='#eee' onPress={() => route.params.toggleSortDrawer() } />
+              </>
             ),
           })} />
         

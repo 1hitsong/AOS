@@ -9,8 +9,11 @@ export default function Home({navigation, route}) {
   let client = route.params.client
 
   const [posts, setPosts] = useState();
-  const [isVisible, setIsVisible] = useState(false);
+  const [sortIsVisible, setSortIsVisible] = useState(false);
+  const [filterIsVisible, setFilterIsVisible] = useState(false);
+
   const [sortOption, setSortOption] = useState('Active');
+  const [filterOption, setFilterOption] = useState('Local');
   const [page, setPage] = useState(1);
 
   const sortList = [
@@ -27,17 +30,36 @@ export default function Home({navigation, route}) {
     { title: 'Top Year', onPress: () => changeSort(`TopYear`) },
   ];
 
+  const filterList = [
+    { title: 'All', onPress: () => changeFilter(`All`) },
+    { title: 'Local', onPress: () => changeFilter(`Local`) },
+    { title: 'Subscribed', onPress: () => changeFilter(`Subscribed`) },
+  ];
+
   const toggleSortDrawer = () => {
-    setIsVisible(!isVisible)
+    setSortIsVisible(!sortIsVisible)
+  }
+
+  const toggleFilterDrawer = () => {
+    setFilterIsVisible(!filterIsVisible)
   }
 
   const changeSort = async (newSortOption) => {
     setSortOption(newSortOption)
 
-    const initPosts = await fetchPosts(newSortOption)
+    const initPosts = await fetchPosts(newSortOption, filterOption)
     setPosts(initPosts.posts)
 
     toggleSortDrawer()
+  }
+
+  const changeFilter = async (newFilterOption) => {
+    setFilterOption(newFilterOption)
+
+    const initPosts = await fetchPosts(sortOption, newFilterOption)
+    setPosts(initPosts.posts)
+
+    toggleFilterDrawer()
   }
 
   useEffect(() => {
@@ -48,13 +70,14 @@ export default function Home({navigation, route}) {
 
     initLoadPosts()
     route.params.toggleSortDrawer = toggleSortDrawer
+    route.params.toggleFilterDrawer = toggleFilterDrawer
   }, []);
 
   const fetchMore = async () => {
     try {
       client.getPosts({
         auth: await SecureStore.getItemAsync('server_jwt'),
-        type_: `Local`,
+        type_: filterOption,
         sort: sortOption,
         limit: 25,
         page: page+1
@@ -72,12 +95,12 @@ export default function Home({navigation, route}) {
     }
   }
 
-  const fetchPosts = async (selectedSortOption = sortOption) => {
+  const fetchPosts = async (newSortOption = sortOption, newFilterOption = filterOption) => {
     try {
       return client.getPosts({
         auth: await SecureStore.getItemAsync('server_jwt'),
-        type_: `Local`,
-        sort: selectedSortOption,
+        type_: newFilterOption,
+        sort: newSortOption,
         limit: 25,
       })
     }
@@ -114,8 +137,18 @@ export default function Home({navigation, route}) {
         </View>
       }
 
-      <BottomSheet backdropStyle={styles.backDrop} isVisible={isVisible} onBackdropPress={() => setIsVisible(false)}>
+      <BottomSheet backdropStyle={styles.backDrop} isVisible={sortIsVisible} onBackdropPress={() => setSortIsVisible(false)}>
         {sortList.map((l, i) => (
+          <ListItem key={i} containerStyle={l.containerStyle} onPress={l.onPress}>
+            <ListItem.Content>
+              <ListItem.Title style={l.titleStyle}>{l.title}</ListItem.Title>
+            </ListItem.Content>
+          </ListItem>
+        ))}
+      </BottomSheet>
+
+      <BottomSheet backdropStyle={styles.backDrop} isVisible={filterIsVisible} onBackdropPress={() => setFilterIsVisible(false)}>
+        {filterList.map((l, i) => (
           <ListItem key={i} containerStyle={l.containerStyle} onPress={l.onPress}>
             <ListItem.Content>
               <ListItem.Title style={l.titleStyle}>{l.title}</ListItem.Title>
