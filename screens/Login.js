@@ -4,30 +4,32 @@ import * as SecureStore from 'expo-secure-store';
 import { LemmyHttp } from 'lemmy-js-client';
 
 export default function Login({navigation, route}) {
-  const [username, setUsername] = useState(``);
-  const [password, setPassword] = useState(``);
-  const [instanceURI, setInstanceURI] = useState(``);
+  const [instanceURI, setInstanceURI] = useState();
+  const [username, setUsername] = useState();
+  const [password, setPassword] = useState();
 
   const onLogin = async () => {
 
-    route.params.client = new LemmyHttp(instanceURI, null);
+    try {
+      route.params.client = new LemmyHttp(instanceURI, null);
 
-    route.params.client.login({
-      username_or_email: username,
-      password: password
-    })
-    .then( async (response) => {
-      let data = await response
+      route.params.client.login({
+        username_or_email: username,
+        password: password
+      })
+      .then( async (response) => {
+        let data = await response
 
-      SecureStore.setItemAsync(`server_instanceURI`, instanceURI)
-      SecureStore.setItemAsync(`user_username`, username)
-      SecureStore.setItemAsync(`server_jwt`, data.jwt)
+        SecureStore.setItemAsync(`server_instanceURI`, instanceURI)
+        SecureStore.setItemAsync(`user_username`, username)
+        SecureStore.setItemAsync(`server_jwt`, data.jwt)
 
-      navigation.replace('Front Page', {client: route.params.client})
-    })
-    .catch( (err) => {
+        navigation.replace('Front Page', {client: route.params.client})
+      })
+    }
+    catch(err){
       console.log(`Login Error`, err)
-    });
+    }
     
   }
   
