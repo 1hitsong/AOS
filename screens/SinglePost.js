@@ -1,7 +1,7 @@
 import { StyleSheet, SafeAreaView, FlatList, View } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import * as SecureStore from 'expo-secure-store';
-import PostCard from '../PostCard';
+import PostCard from './components/PostCard';
 import Comment from './components/Comment';
 import Markdown from '@jonasmerlin/react-native-markdown-display';
 

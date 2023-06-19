@@ -1,9 +1,9 @@
 import { StyleSheet, View, SafeAreaView, Dimensions, Alert } from 'react-native';
 import React,  { useState, useEffect } from 'react';
 import * as SecureStore from 'expo-secure-store';
-import PostCard from '../PostCard';
-import { Skeleton, LinearGradient, BottomSheet, ListItem } from '@rneui/themed';
-import { FlashList } from "@shopify/flash-list";
+import Timeline from './components/Timeline';
+import {BottomSheet, ListItem } from '@rneui/themed';
+import LoadingIcon from './components/LoadingIcon';
 
 export default function Home({navigation, route}) {
   let client = route.params.client
@@ -15,6 +15,7 @@ export default function Home({navigation, route}) {
   const [sortOption, setSortOption] = useState('Active');
   const [filterOption, setFilterOption] = useState('Local');
   const [page, setPage] = useState(1);
+  const [isRefreshing, setIsRefreshing] = useState(false)
 
   const sortList = [
     { title: 'Active', onPress: () => changeSort(`Active`) },
@@ -62,12 +63,19 @@ export default function Home({navigation, route}) {
     toggleFilterDrawer()
   }
 
-  useEffect(() => {
-    const initLoadPosts = async () => {
-      const initPosts = await fetchPosts()
-      setPosts(initPosts.posts)
+  const initLoadPosts = () => {
+    try {
+      fetchPosts().then( (data) => {
+        setPosts(data.posts)
+        setIsRefreshing(false)
+      })
     }
+    catch(e) {
+      console.log(`Error Loading Posts`, e.message)
+    }
+  }
 
+  useEffect(() => {
     initLoadPosts()
     route.params.toggleSortDrawer = toggleSortDrawer
     route.params.toggleFilterDrawer = toggleFilterDrawer
@@ -102,39 +110,21 @@ export default function Home({navigation, route}) {
         type_: newFilterOption,
         sort: newSortOption,
         limit: 25,
+        page: 1
       })
     }
     catch(e) {
       console.log(`Error Loading Posts`)
     }
   }
-
-  const _renderitem = (post) => {
-    return <PostCard data={post.item} navigation={navigation} client={client} />
-  }
   
   return (
     <SafeAreaView style={styles.container}>
       {
-      (!posts) ?
-        <View style={styles.loadingIcon}>
-          <Skeleton
-            LinearGradientComponent={LinearGradient}
-            animation="wave"
-            width={80}
-            height={40}
-          />
-        </View>
+      (posts) ?
+        <Timeline posts={posts} refresh={initLoadPosts} isRefreshing={isRefreshing} setIsRefreshing={setIsRefreshing} fetchMore={fetchMore} navigation={navigation} client={client} />
       :
-        <View style={{height: Dimensions.get("screen").height-130, width: Dimensions.get("screen").width}}>
-          <FlashList 
-          onEndReached={fetchMore}
-          onEndReachedThreshold={0.2}
-          style={styles.scrollView}
-          data={posts}
-          estimatedItemSize={200}
-          renderItem={_renderitem} />
-        </View>
+        <LoadingIcon />        
       }
 
       <BottomSheet backdropStyle={styles.backDrop} isVisible={sortIsVisible} onBackdropPress={() => setSortIsVisible(false)}>
@@ -167,11 +157,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingTop: 0,
-  },
-  loadingIcon: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 30
   },
   backDrop: {
     backgroundColor: `rgba(0,0,0,.8)`
