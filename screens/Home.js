@@ -1,21 +1,26 @@
 import { StyleSheet, View, SafeAreaView, Dimensions, Alert } from 'react-native';
 import React,  { useState, useEffect } from 'react';
-import * as SecureStore from 'expo-secure-store';
 import Timeline from './components/Timeline';
 import {BottomSheet, ListItem } from '@rneui/themed';
 import LoadingIcon from './components/LoadingIcon';
+import { useSelector, useDispatch } from 'react-redux';
+import {
+    selectPageData,
+    getPageData, reloadPageData
+  } from '../store/timelineSlice';
 
 export default function Home({navigation, route}) {
-  let client = route.params.client
 
-  const [posts, setPosts] = useState();
   const [sortIsVisible, setSortIsVisible] = useState(false);
   const [filterIsVisible, setFilterIsVisible] = useState(false);
 
   const [sortOption, setSortOption] = useState('Active');
   const [filterOption, setFilterOption] = useState('Local');
-  const [page, setPage] = useState(1);
+  const [pageNumber, setPageNumber] = useState(1);
   const [isRefreshing, setIsRefreshing] = useState(false)
+
+  const posts = useSelector(selectPageData);
+  const dispatch = useDispatch();
 
   const sortList = [
     { title: 'Active', onPress: () => changeSort(`Active`) },
@@ -47,28 +52,35 @@ export default function Home({navigation, route}) {
 
   const changeSort = async (newSortOption) => {
     setSortOption(newSortOption)
-
-    const initPosts = await fetchPosts(newSortOption, filterOption)
-    setPosts(initPosts.posts)
-
+    ReloadPosts(filterOption, newSortOption)
     toggleSortDrawer()
   }
 
   const changeFilter = async (newFilterOption) => {
     setFilterOption(newFilterOption)
-
-    const initPosts = await fetchPosts(sortOption, newFilterOption)
-    setPosts(initPosts.posts)
-
+    ReloadPosts(newFilterOption, sortOption)
     toggleFilterDrawer()
   }
 
-  const initLoadPosts = () => {
+  const ReloadPosts = (filter, sort) => {
     try {
-      fetchPosts().then( (data) => {
-        setPosts(data.posts)
-        setIsRefreshing(false)
-      })
+      setIsRefreshing(true)
+
+      const page = 1
+      dispatch(reloadPageData({page, filter, sort}))
+      setPageNumber(page)
+      setIsRefreshing(false)
+    }
+    catch(e) {
+      console.log(`Error Loading Posts`, e.message)
+    }
+  }
+
+  const LoadPosts = (page, filter, sort) => {
+    try {
+      setIsRefreshing(true)
+      dispatch(getPageData({page, filter, sort}))
+      setIsRefreshing(false)
     }
     catch(e) {
       console.log(`Error Loading Posts`, e.message)
@@ -76,53 +88,26 @@ export default function Home({navigation, route}) {
   }
 
   useEffect(() => {
-    initLoadPosts()
+    LoadPosts(pageNumber, filterOption, sortOption)
     route.params.toggleSortDrawer = toggleSortDrawer
     route.params.toggleFilterDrawer = toggleFilterDrawer
   }, []);
 
-  const fetchMore = async () => {
-    try {
-      client.getPosts({
-        auth: await SecureStore.getItemAsync('server_jwt'),
-        type_: filterOption,
-        sort: sortOption,
-        limit: 25,
-        page: page+1
-      }).
-      then((sitePosts) => {
-        setPosts((m) => {
-          return m.concat(sitePosts.posts);
-        });
-      })
-      
-      setPage(page+1)
-    }
-    catch(e) {
-      Alert(`Error Loading More Posts`, e)
-    }
+  const onRefresh = async () => {
+    ReloadPosts(filterOption, sortOption)
   }
 
-  const fetchPosts = async (newSortOption = sortOption, newFilterOption = filterOption) => {
-    try {
-      return client.getPosts({
-        auth: await SecureStore.getItemAsync('server_jwt'),
-        type_: newFilterOption,
-        sort: newSortOption,
-        limit: 25,
-        page: 1
-      })
-    }
-    catch(e) {
-      console.log(`Error Loading Posts`)
-    }
+  const fetchMore = async () => {
+    const newPageNumber = pageNumber + 1
+    LoadPosts(newPageNumber, filterOption, sortOption)
+    setPageNumber(newPageNumber)
   }
   
   return (
     <SafeAreaView style={styles.container}>
       {
       (posts) ?
-        <Timeline posts={posts} refresh={initLoadPosts} isRefreshing={isRefreshing} setIsRefreshing={setIsRefreshing} fetchMore={fetchMore} navigation={navigation} client={client} />
+        <Timeline posts={posts} refresh={onRefresh} isRefreshing={isRefreshing} setIsRefreshing={setIsRefreshing} fetchMore={fetchMore} navigation={navigation} />
       :
         <LoadingIcon />        
       }

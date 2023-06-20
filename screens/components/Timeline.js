@@ -5,7 +5,7 @@ import PostCard from './PostCard';
 
 const TimeLine = (props) => {
 
-    const {posts, refresh, isRefreshing, setIsRefreshing, fetchMore, navigation, client} = props
+    const {posts, refresh, isRefreshing, setIsRefreshing, fetchMore, navigation} = props
 
     const onRefresh = () => {
         setIsRefreshing(true)
@@ -13,7 +13,7 @@ const TimeLine = (props) => {
     }
 
     const _renderitem = (post) => {
-        return <PostCard data={post.item} navigation={navigation} client={client} />
+        return <PostCard data={post.item} navigation={navigation} />
     }
 
     return (
@@ -22,7 +22,7 @@ const TimeLine = (props) => {
                 onRefresh={onRefresh}
                 refreshing={isRefreshing}
                 onEndReached={fetchMore}
-                onEndReachedThreshold={0.2}
+                onEndReachedThreshold={0.3}
                 style={styles.scrollView}
                 data={posts}
                 estimatedItemSize={200}

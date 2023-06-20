@@ -2,7 +2,7 @@ import React, { useState, memo } from 'react';
 import { StyleSheet, View, Text, Image, Pressable, Modal, Share } from 'react-native';
 import { Card, Icon } from '@rneui/themed';
 import Markdown from '@jonasmerlin/react-native-markdown-display';
-import * as SecureStore from 'expo-secure-store';
+import { savePost, votePost, blockCommunity } from '../../store/lemmyAPI';
 
 const truncate = (input) => input.length > 150 ? `${input.substring(0, 150)}…` : input;
 
@@ -16,7 +16,6 @@ export default memo(PostCard);
 
 function PostCard(props) {
   const postData = props.data
-  let client = props.client
   let navigation = props.navigation
   let postContent
 
@@ -44,10 +43,9 @@ function PostCard(props) {
 
   const onFavorite = async () => {
     try {
-      await client.savePost({
-        auth: await SecureStore.getItemAsync('server_jwt'),
-        post_id: postData.post.id,
-        save: !isFavorite
+      savePost({
+        postID: postData.post.id, 
+        isFavorite: !isFavorite
       })
 
       setIsFavorite(!isFavorite)
@@ -62,9 +60,8 @@ function PostCard(props) {
 
     setPostVote(value)
     try {
-      await client.likePost({
-        auth: await SecureStore.getItemAsync('server_jwt'),
-        post_id: postData.post.id,
+      await votePost({
+        postID: postData.post.id,
         score: value
       });
     } catch(e) {
@@ -72,10 +69,9 @@ function PostCard(props) {
     }
   };
 
-  const blockCommunity = async (communityID) => {
+  const onBlockCommunity = async (communityID) => {
     try {
-      client.blockCommunity({
-        auth: await SecureStore.getItemAsync('server_jwt'),
+      blockCommunity({
         community_id: communityID,
         block: true
       }).
@@ -122,7 +118,7 @@ function PostCard(props) {
             <Text style={styles.modalText}>Hello World!</Text>
             <Pressable
               style={[styles.button, styles.buttonClose]}
-              onPress={() => blockCommunity(postData.community.id)}>
+              onPress={() => onBlockCommunity(postData.community.id)}>
               <Text style={styles.textStyle}>Block Community</Text>
             </Pressable>
             <Pressable
@@ -133,7 +129,7 @@ function PostCard(props) {
           </View>
         </View>
       </Modal>
-      <Pressable key={postData.post.id} onPress={ () => navigation.navigate('SinglePostScreen', {client: client, post: postData}) }>
+      <Pressable key={postData.post.id} onPress={ () => navigation.navigate('SinglePostScreen') }>
         <Card containerStyle={styles.container}>
           <View style={{flexDirection:'row', alignItems:'center'}}>
             { postData.community.icon &&
