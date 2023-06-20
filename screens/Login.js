@@ -1,19 +1,20 @@
 import { StyleSheet, Text, SafeAreaView, ScrollView, TextInput, Button } from 'react-native';
 import React, { useState } from 'react';
 import * as SecureStore from 'expo-secure-store';
-import { LemmyHttp } from 'lemmy-js-client';
+import {init} from '../store/client'
 
 export default function Login({navigation, route}) {
-  const [instanceURI, setInstanceURI] = useState();
-  const [username, setUsername] = useState();
-  const [password, setPassword] = useState();
+  const [instanceURI, setInstanceURI] = useState(``);
+  const [username, setUsername] = useState(``);
+  const [password, setPassword] = useState(``);
+
 
   const onLogin = async () => {
-
     try {
-      route.params.client = new LemmyHttp(instanceURI, null);
 
-      route.params.client.login({
+      const server = await init(instanceURI)
+
+      server.client.login({
         username_or_email: username,
         password: password
       })
@@ -24,7 +25,7 @@ export default function Login({navigation, route}) {
         SecureStore.setItemAsync(`user_username`, username)
         SecureStore.setItemAsync(`server_jwt`, data.jwt)
 
-        navigation.replace('Front Page', {client: route.params.client})
+        navigation.replace('Front Page')
       })
     }
     catch(err){

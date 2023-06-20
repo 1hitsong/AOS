@@ -13,6 +13,7 @@
     "@jonasmerlin/react-native-markdown-display": "^1.1.0",
     "@react-navigation/native": "^6.1.6",
     "@react-navigation/native-stack": "^6.9.12",
+    "@reduxjs/toolkit": "^1.9.5",
     "@rneui/base": "^4.0.0-rc.7",
     "@rneui/themed": "^4.0.0-rc.7",
     "@shopify/flash-list": "^1.4.3",
@@ -25,7 +26,9 @@
     "react-native": "0.71.8",
     "react-native-safe-area-context": "4.5.0",
     "react-native-screens": "~3.20.0",
-    "react-native-web": "~0.18.10"
+    "react-native-web": "~0.18.10",
+    "react-redux": "^8.1.0",
+    "redux": "^4.2.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
