@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, Image, Pressable, Modal, Share } from 'react-na
 import { Card, Icon } from '@rneui/themed';
 import Markdown from '@jonasmerlin/react-native-markdown-display';
 import { savePost, votePost, blockCommunity } from '../../store/lemmyAPI';
+import { fuzzyTimeStamp } from '../helpers/dateTime'
 
 const truncate = (input) => input.length > 150 ? `${input.substring(0, 150)}…` : input;
 
@@ -18,6 +19,24 @@ function PostCard(props) {
   const postData = props.data
   let navigation = props.navigation
   let postContent
+  let postDomain
+  let postTimeStamp
+
+  if (postData.post.published) {
+    postTimeStamp = fuzzyTimeStamp(postData.post.published)
+    postTimeStamp = ` • ` + postTimeStamp
+  }
+
+  if (postData.post.url) {
+    postDomain = postData.post.url
+    postDomain = postDomain.split('/')[2]
+
+    if ((postDomain.match(/\./g)||[]).length > 1) {
+      postDomain = `${postDomain.split('.')[1]}.${postDomain.split('.')[2]}`
+    }
+
+    postDomain = ` • ` + postDomain
+  }
 
   if (!postData) return
   if (!postData.post) return
@@ -129,6 +148,7 @@ function PostCard(props) {
           </View>
         </View>
       </Modal>
+
       <Pressable key={postData.post.id} onPress={ () => navigation.navigate('SinglePostScreen') }>
         <Card containerStyle={styles.container}>
           <View style={{flexDirection:'row', alignItems:'center'}}>
@@ -142,6 +162,8 @@ function PostCard(props) {
               </Pressable>
             }
             <Text style={styles.community}>{postData.community.name}</Text>
+            <Text style={styles.domain}>{postDomain}</Text>
+            <Text style={styles.timestamp}>{postTimeStamp}</Text>
           </View>
 
           <View style={{flexDirection:'row', alignItems:'flex-start'}}>
@@ -205,6 +227,16 @@ const styles = StyleSheet.create({
   },
   community: {
     color: '#F95151',
+    textAlign: 'left',
+    fontSize: 12
+  },
+  domain: {
+    color: '#888',
+    textAlign: 'left',
+    fontSize: 12
+  },
+  timestamp: {
+    color: '#888',
     textAlign: 'left',
     fontSize: 12
   },
