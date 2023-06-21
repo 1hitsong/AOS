@@ -8,11 +8,9 @@ import {
     selectPageData,
     getPageData, reloadPageData
   } from '../store/timelineSlice';
+import { isSortMenuOpen, closeSortMenu, isFilterMenuOpen, closeFilterMenu } from '../store/appSlice';
 
 export default function Home({navigation, route}) {
-
-  const [sortIsVisible, setSortIsVisible] = useState(false);
-  const [filterIsVisible, setFilterIsVisible] = useState(false);
 
   const [sortOption, setSortOption] = useState('Active');
   const [filterOption, setFilterOption] = useState('Local');
@@ -42,24 +40,19 @@ export default function Home({navigation, route}) {
     { title: 'Subscribed', onPress: () => changeFilter(`Subscribed`) },
   ];
 
-  const toggleSortDrawer = () => {
-    setSortIsVisible(!sortIsVisible)
-  }
-
-  const toggleFilterDrawer = () => {
-    setFilterIsVisible(!filterIsVisible)
-  }
+  const sortMenuOpen = useSelector(isSortMenuOpen)
+  const filterMenuOpen = useSelector(isFilterMenuOpen)
 
   const changeSort = async (newSortOption) => {
     setSortOption(newSortOption)
     ReloadPosts(filterOption, newSortOption)
-    toggleSortDrawer()
+    dispatch(closeSortMenu())
   }
 
   const changeFilter = async (newFilterOption) => {
     setFilterOption(newFilterOption)
     ReloadPosts(newFilterOption, sortOption)
-    toggleFilterDrawer()
+    dispatch(closeFilterMenu())
   }
 
   const ReloadPosts = (filter, sort) => {
@@ -89,8 +82,6 @@ export default function Home({navigation, route}) {
 
   useEffect(() => {
     LoadPosts(pageNumber, filterOption, sortOption)
-    route.params.toggleSortDrawer = toggleSortDrawer
-    route.params.toggleFilterDrawer = toggleFilterDrawer
   }, []);
 
   const onRefresh = async () => {
@@ -112,7 +103,7 @@ export default function Home({navigation, route}) {
         <LoadingIcon />        
       }
 
-      <BottomSheet backdropStyle={styles.backDrop} isVisible={sortIsVisible} onBackdropPress={() => setSortIsVisible(false)}>
+      <BottomSheet backdropStyle={styles.backDrop} isVisible={sortMenuOpen} onBackdropPress={() => dispatch(closeSortMenu())}>
         {sortList.map((l, i) => (
           <ListItem key={i} containerStyle={l.containerStyle} onPress={l.onPress}>
             <ListItem.Content>
@@ -122,7 +113,7 @@ export default function Home({navigation, route}) {
         ))}
       </BottomSheet>
 
-      <BottomSheet backdropStyle={styles.backDrop} isVisible={filterIsVisible} onBackdropPress={() => setFilterIsVisible(false)}>
+      <BottomSheet backdropStyle={styles.backDrop} isVisible={filterMenuOpen} onBackdropPress={() => dispatch(closeFilterMenu())}>
         {filterList.map((l, i) => (
           <ListItem key={i} containerStyle={l.containerStyle} onPress={l.onPress}>
             <ListItem.Content>
