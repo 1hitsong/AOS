@@ -8,15 +8,18 @@ export default function Login({navigation, route}) {
   const [username, setUsername] = useState(``);
   const [password, setPassword] = useState(``);
 
-  useEffect(async () => {
-    const instanceURI = await SecureStore.getItemAsync('server_instanceURI')
-    if (!instanceURI) return
+  useEffect(() => {
+    async function isLoggedIn() {
+      const instanceURI = await SecureStore.getItemAsync('server_instanceURI')
+      if (!instanceURI) return
 
-    const server = await init(instanceURI)
-    if (!server) return
-    if (!server.jwt) return
+      const server = await init(instanceURI)
+      if (!server) return
+      if (!server.jwt) return
 
-    navigation.replace('Front Page')
+      navigation.replace('Front Page')
+    }
+    isLoggedIn();
   }, []);
 
   const onLogin = async () => {
