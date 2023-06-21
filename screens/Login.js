@@ -1,5 +1,5 @@
 import { StyleSheet, Text, SafeAreaView, ScrollView, TextInput, Button } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import {init} from '../store/client'
 
@@ -8,6 +8,16 @@ export default function Login({navigation, route}) {
   const [username, setUsername] = useState(``);
   const [password, setPassword] = useState(``);
 
+  useEffect(async () => {
+    const instanceURI = await SecureStore.getItemAsync('server_instanceURI')
+    if (!instanceURI) return
+
+    const server = await init(instanceURI)
+    if (!server) return
+    if (!server.jwt) return
+
+    navigation.replace('Front Page')
+  }, []);
 
   const onLogin = async () => {
     try {
