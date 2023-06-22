@@ -1,6 +1,19 @@
 import * as SecureStore from 'expo-secure-store';
 import { init } from './client'
 
+export async function fetchSiteData() {
+    const server = await init(await SecureStore.getItemAsync('server_instanceURI'))
+
+    try {
+        return server.client.getSite({
+            auth: server.jwt,
+        })
+    }
+    catch (e) {
+        console.log(`Error`, e)
+    }
+}
+
 export async function fetchPageData(props) {
     const {page, filter, sort} = props
 
