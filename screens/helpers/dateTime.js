@@ -1,10 +1,12 @@
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import updateLocale from 'dayjs/plugin/updateLocale'
+import utc from 'dayjs/plugin/utc'
 
 export function fuzzyTimeStamp(timestamp) {
     dayjs.extend(relativeTime)
     dayjs.extend(updateLocale)
+    dayjs.extend(utc)
     dayjs.updateLocale('en', {
         relativeTime: {
             future: "in %s",
@@ -23,5 +25,5 @@ export function fuzzyTimeStamp(timestamp) {
         }
     })
 
-    return dayjs(timestamp).fromNow()
+    return dayjs(timestamp).utc(true).fromNow(true)
 }
