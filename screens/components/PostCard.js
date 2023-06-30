@@ -153,7 +153,16 @@ function PostCard(props) {
         <Card containerStyle={styles.container}>
           <View style={{flexDirection:'row', alignItems:'center'}}>
             { postData.community.icon &&
-              <Pressable onLongPress={ () => setModalVisible(true) }>
+              <Pressable 
+                onPress={
+                  () => {
+                    navigation.navigate('Community', { communityName: `${postData.community.name}@${postData.community.actor_id.split('/')[2]}` })
+                  }
+                } 
+                onLongPress={ 
+                  () => setModalVisible(true) 
+                }
+              >
                 <Image
                   style={styles.image}
                   resizeMode="cover"
