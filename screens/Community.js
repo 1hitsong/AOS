@@ -1,4 +1,4 @@
-import { StyleSheet, View, SafeAreaView, Dimensions, Alert } from 'react-native';
+import { StyleSheet, SafeAreaView } from 'react-native';
 import React,  { useState, useEffect } from 'react';
 import Timeline from './components/Timeline';
 import {BottomSheet, ListItem } from '@rneui/themed';
