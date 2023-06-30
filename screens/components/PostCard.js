@@ -4,27 +4,23 @@ import { Card, Icon } from '@rneui/themed'
 import Markdown from '@jonasmerlin/react-native-markdown-display'
 import { savePost, votePost, blockCommunity } from '../../store/lemmyAPI'
 import { fuzzyTimeStamp } from '../helpers/dateTime'
-
-const truncate = (input) => input.length > 150 ? `${input.substring(0, 150)}…` : input
-
-const markdownRules = {
-    list_item: (node, children, parent, styles) =>
-        <Text key={node.key} style={[styles.list_item]}> • {children}</Text>
-}
+import { truncate } from '../helpers/textHelper'
+import { markdownRules } from '../helpers/markdownHelper'
 
 function PostCard({data, navigation}) {
+    if (!data) return
+    if (!data.post) return
+
     let postContent
     let postDomain
     let postTimeStamp
 
     if (data.post.published) {
-        postTimeStamp = fuzzyTimeStamp(data.post.published)
-        postTimeStamp = ` • ` + postTimeStamp
+        postTimeStamp = ` • ` + fuzzyTimeStamp(data.post.published)
     }
 
     if (data.post.url) {
-        postDomain = data.post.url
-        postDomain = postDomain.split('/')[2]
+        postDomain = data.post.url.split('/')[2]
 
         if ((postDomain.match(/\./g)||[]).length > 1) {
             postDomain = `${postDomain.split('.')[1]}.${postDomain.split('.')[2]}`
@@ -32,9 +28,6 @@ function PostCard({data, navigation}) {
 
         postDomain = ` • ` + postDomain
     }
-
-    if (!data) return
-    if (!data.post) return
   
     if (data.post.body) {
         postContent = <Markdown rules={markdownRules} style={styles.markdown}>{truncate(data.post.body)}</Markdown>
