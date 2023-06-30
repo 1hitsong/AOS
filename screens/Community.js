@@ -2,19 +2,24 @@ import { StyleSheet, View, SafeAreaView, Dimensions, Alert } from 'react-native'
 import React,  { useState, useEffect } from 'react';
 import Timeline from './components/Timeline';
 import {BottomSheet, ListItem } from '@rneui/themed';
+import LoadingIcon from './components/LoadingIcon';
 import { useSelector, useDispatch } from 'react-redux';
 import {
+    selectPageData,
     getPageData, reloadPageData
   } from '../store/timelineSlice';
 import { isSortMenuOpen, closeSortMenu, isFilterMenuOpen, closeFilterMenu } from '../store/appSlice';
 
-export default function Home({navigation, route}) {
+export default function Community({navigation, route}) {
+
+  const communityName = route.params.communityName
 
   const [sortOption, setSortOption] = useState('Active');
   const [filterOption, setFilterOption] = useState('Local');
   const [pageNumber, setPageNumber] = useState(1);
   const [isRefreshing, setIsRefreshing] = useState(false)
 
+  const posts = useSelector(selectPageData);
   const dispatch = useDispatch();
 
   const sortList = [
@@ -57,7 +62,7 @@ export default function Home({navigation, route}) {
       setIsRefreshing(true)
 
       const page = 1
-      dispatch(reloadPageData({page, filter, sort}))
+      dispatch(reloadPageData({page, filter, sort, communityName}))
       setPageNumber(page)
       setIsRefreshing(false)
     }
@@ -69,7 +74,7 @@ export default function Home({navigation, route}) {
   const LoadPosts = (page, filter, sort) => {
     try {
       setIsRefreshing(true)
-      dispatch(getPageData({page, filter, sort}))
+      dispatch(getPageData({page, filter, sort, communityName}))
       setIsRefreshing(false)
     }
     catch(e) {
@@ -78,8 +83,12 @@ export default function Home({navigation, route}) {
   }
 
   useEffect(() => {
-    navigation.addListener('focus', () => ReloadPosts(filterOption, sortOption))
+    ReloadPosts(filterOption, sortOption)
   }, []);
+
+  useEffect(() => {
+    ReloadPosts(filterOption, sortOption)
+  }, [communityName]);
 
   const onRefresh = async () => {
     ReloadPosts(filterOption, sortOption)
@@ -93,7 +102,12 @@ export default function Home({navigation, route}) {
   
   return (
     <SafeAreaView style={styles.container}>
-      <Timeline refresh={onRefresh} isRefreshing={isRefreshing} setIsRefreshing={setIsRefreshing} fetchMore={fetchMore} navigation={navigation} />
+      {
+      (posts) ?
+        <Timeline posts={posts} refresh={onRefresh} isRefreshing={isRefreshing} setIsRefreshing={setIsRefreshing} fetchMore={fetchMore} navigation={navigation} />
+      :
+        <LoadingIcon />
+      }
 
       <BottomSheet backdropStyle={styles.backDrop} isVisible={sortMenuOpen} onBackdropPress={() => dispatch(closeSortMenu())}>
         {sortList.map((l, i) => (

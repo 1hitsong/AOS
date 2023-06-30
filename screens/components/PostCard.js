@@ -161,7 +161,10 @@ function PostCard(props) {
                 />
               </Pressable>
             }
-            <Text style={styles.community}>{postData.community.name}</Text>
+            <Text style={styles.community} onPress={() => {
+              navigation.navigate('Community', { communityName: `${postData.community.name}@${postData.community.actor_id.split('/')[2]}` })
+              }
+            }>{postData.community.name}</Text>
             <Text style={styles.domain}>{postDomain}</Text>
             <Text style={styles.timestamp}>{postTimeStamp}</Text>
           </View>

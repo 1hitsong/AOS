@@ -1,5 +1,5 @@
 import React, {useRef, useEffect} from 'react';
-import { NavigationContainer } from '@react-navigation/native'
+import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { StatusBar } from 'expo-status-bar'
 import { Icon } from '@rneui/themed'
@@ -18,6 +18,7 @@ import {
 } from 'react-native';
 
 import Home from './screens/Home'
+import Community from './screens/Community'
 import Login from './screens/Login'
 import SinglePost from './screens/SinglePost'
 
@@ -34,6 +35,7 @@ const App = () => {
 
   const dispatch = useDispatch();
   const drawer = useRef(null);
+  const navigationRef = useNavigationContainerRef()
   const siteData = useSelector(selectSiteData);
 
   useEffect(() => {
@@ -52,7 +54,11 @@ const App = () => {
           :
           <View style={styles.missingIcon} />
         }
-        <Text style={styles.communityName}>{data.community.name}</Text>
+        <Text style={styles.communityName} onPress={() => {
+          drawer.current.closeDrawer()
+          navigationRef.navigate('Community', { communityName: `${data.community.name}@${data.community.actor_id.split('/')[2]}` })
+        }
+        }>{data.community.name}</Text>
       </View>
     );
 
@@ -102,7 +108,7 @@ const App = () => {
       drawerWidth={300}
       drawerPosition='left'
       renderNavigationView={() => MainMenu(drawer)}>
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef}>
       <StatusBar style="light" />
       <Stack.Navigator
         initialRouteName='LoginScreen'
@@ -126,6 +132,25 @@ const App = () => {
           component={Home}
           initialParams={{}}
           options={({ navigation, route }) => ({
+            headerLeft: () => (
+              <>
+                <Icon name='menu' type='MaterialIcons' color='#eee' onPress={() => drawer.current.openDrawer() } />
+              </>
+            ),
+            headerRight: () => (
+              <>
+                <Icon name='filter-list' type='MaterialIcons' color='#eee' onPress={() => dispatch(toggleFilterMenu()) } />
+                <Icon name='sort' type='MaterialIcons' color='#eee' onPress={() => dispatch(toggleSortMenu()) } />
+              </>
+            ),
+          })} />
+
+        <Stack.Screen 
+          name="Community" 
+          component={Community}
+          initialParams={{}}
+          options={({ navigation, route }) => ({
+            title: route.params.communityName,
             headerLeft: () => (
               <>
                 <Icon name='menu' type='MaterialIcons' color='#eee' onPress={() => drawer.current.openDrawer() } />

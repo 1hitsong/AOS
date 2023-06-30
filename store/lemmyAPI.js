@@ -15,7 +15,7 @@ export async function fetchSiteData() {
 }
 
 export async function fetchPageData(props) {
-    const {page, filter, sort} = props
+    const {page, filter, sort, communityName} = props
 
     const server = await init(await SecureStore.getItemAsync('server_instanceURI'))
 
@@ -25,7 +25,8 @@ export async function fetchPageData(props) {
             type_: filter,
             sort: sort,
             limit: 25,
-            page: page
+            page: page,
+            community_name: communityName
         })
     }
     catch (e) {
