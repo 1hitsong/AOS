@@ -1,6 +1,6 @@
-import React from 'react';
-import {View, StyleSheet} from 'react-native';
-import { Skeleton, LinearGradient } from '@rneui/themed';
+import React from 'react'
+import { View, StyleSheet } from 'react-native'
+import { Skeleton, LinearGradient } from '@rneui/themed'
 
 const LoadingIcon = () => 
     <View style={styles.loadingIcon}>
@@ -18,6 +18,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         marginTop: 30
     },
-});
+})
 
-export default LoadingIcon;
+export default LoadingIcon

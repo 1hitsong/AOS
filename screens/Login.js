@@ -1,4 +1,4 @@
-import { StyleSheet, Text, SafeAreaView, ScrollView, TextInput, Button } from 'react-native';
+import { StyleSheet, SafeAreaView, ScrollView, TextInput, Button } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import {init} from '../store/client'
