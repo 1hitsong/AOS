@@ -26,7 +26,7 @@ function PostCard({data, navigation}) {
             postDomain = `${postDomain.split('.')[1]}.${postDomain.split('.')[2]}`
         }
 
-        postDomain = ` • ` + postDomain
+        postDomain = postDomain
     }
   
     if (data.post.body) {
@@ -142,7 +142,7 @@ function PostCard({data, navigation}) {
 
             <Pressable key={data.post.id} onPress={ () => navigation.navigate('SinglePostScreen') }>
                 <Card containerStyle={styles.container}>
-                    <View style={{flexDirection:'row', alignItems:'center'}}>
+                    <View style={{flexDirection:'row', alignItems:'flex-start'}}>
                         { data.community.icon &&
                             <Pressable 
                                 onPress={
@@ -161,13 +161,17 @@ function PostCard({data, navigation}) {
                                 />
                             </Pressable>
                         }
-                        <Text style={styles.community} onPress={() => {
-                            navigation.navigate('Community', { communityName: `${data.community.name}@${data.community.actor_id.split('/')[2]}` })
-                        }}>
-                            {data.community.name}
-                        </Text>
-                        <Text style={styles.domain}>{postDomain}</Text>
-                        <Text style={styles.timestamp}>{postTimeStamp}</Text>
+                        <View style={{flexDirection:'column', alignItems:'flex-start'}}>
+                            <Text style={styles.community} onPress={() => {
+                                navigation.navigate('Community', { communityName: `${data.community.name}@${data.community.actor_id.split('/')[2]}` })
+                            }}>
+                                {data.community.name}
+                            </Text>
+                            <View style={{flexDirection:'row', alignItems:'center'}}>
+                                <Text style={styles.domain}>{postDomain}</Text>
+                                <Text style={styles.timestamp}>{postTimeStamp}</Text>
+                            </View>
+                        </View>
                     </View>
 
                     <View style={{flexDirection:'row', alignItems:'flex-start'}}>
@@ -296,7 +300,7 @@ const styles = StyleSheet.create({
         width: 32,
         height: 32,
         marginRight: 10,
-        borderRadius: 16
+        borderRadius: 5
     },
     thumbnail: {
         width: 50,
