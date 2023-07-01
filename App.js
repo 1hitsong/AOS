@@ -17,6 +17,7 @@ import Home from './screens/Home'
 import Community from './screens/Community'
 import Login from './screens/Login'
 import SinglePost from './screens/SinglePost'
+import UserProfile from './screens/UserProfile'
 
 const App = () => {
 
@@ -87,6 +88,7 @@ const App = () => {
                     />
         
                     <Stack.Screen name="SinglePostScreen" component={SinglePost} />
+                    <Stack.Screen name="UserProfile" component={UserProfile} />
                 </Stack.Navigator>
             </NavigationContainer>
         </DrawerLayoutAndroid>
