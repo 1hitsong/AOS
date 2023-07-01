@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import {
     Text,
-    StyleSheet,
+    StyleSheet, Pressable,
     View, Image, FlatList
 } from 'react-native'
 import CommunityListItem from './CommunityListItem'
@@ -27,8 +27,15 @@ const SideMenu = ({navigationRef, drawer}) => {
         <View style={[styles.container, styles.mainMenu]}>
             {person &&
                 <View style={styles.bio}>
-                <Image source={{uri: person.avatar}} style={styles.bioAvatar} />
-                <Text style={styles.bioName}>{person.name}</Text>
+                    <Pressable
+                        onPress={() => {
+                            drawer.current.closeDrawer()
+                            navigationRef.navigate('UserProfile')
+                        }}
+                    >
+                        <Image source={{uri: person.avatar}} style={styles.bioAvatar} />
+                        <Text style={styles.bioName}>{person.name}</Text>
+                    </Pressable>
                 </View>
             }
   
