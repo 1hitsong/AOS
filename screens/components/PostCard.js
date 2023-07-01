@@ -1,4 +1,4 @@
-import React, { useState, memo } from 'react'
+import React, { useState, memo, useEffect } from 'react'
 import { StyleSheet, View, Text, Image, Pressable, Modal, Share } from 'react-native'
 import { Card, Icon } from '@rneui/themed'
 import Markdown from '@jonasmerlin/react-native-markdown-display'
@@ -48,6 +48,10 @@ function PostCard({data, navigation}) {
 
     const [postVote, setPostVote] = useState(data.my_vote)
     const [isFavorite, setIsFavorite] = useState(data.saved)
+
+    let upVoteIconColor = (postVote === 1) ? `#ffd60a` : `#eee`
+    let downVoteIconColor = (postVote === -1) ? `#ffd60a` : `#eee`
+    let favoriteIconColor = (isFavorite) ? `#ffd60a` : `#eee`
 
     const onFavorite = async () => {
         try {
@@ -104,10 +108,6 @@ function PostCard({data, navigation}) {
     }
 
     const titleContainerType = (data.post.body && data.post.thumbnail_url) ? styles.titleShareWidth : styles.titleFullWidth
-
-    const upVoteIconColor = (postVote === 1) ? `#3498db` : `#eee`
-    const downVoteIconColor = (postVote === -1) ? `#3498db` : `#eee`
-    const favoriteIconColor = (isFavorite) ? `#3498db` : `#eee`
 
     const [modalVisible, setModalVisible] = useState(false)
   
@@ -197,7 +197,6 @@ function PostCard({data, navigation}) {
                         <Icon onPress={() => onVote(1)} name='thumb-up' type='MaterialIcons' color={upVoteIconColor} />
                         <Icon onPress={() => onVote(-1)} name='thumb-down' type='MaterialIcons' color={downVoteIconColor} />
                         <Icon onPress={onFavorite} name='bookmark' type='MaterialIcons' color={favoriteIconColor} />
-                        <Icon name='comment' type='MaterialIcons' color='#eee' />
                         <Icon name='content-copy' type='MaterialIcons' color='#eee' />
                         <Icon onPress={onShare} name='share' type='MaterialIcons' color='#eee' />
                     </View>
@@ -211,36 +210,38 @@ const styles = StyleSheet.create({
     container: {
         borderWidth: 0,
         flex: 1,
-        backgroundColor: '#1B2836',
+        backgroundColor: '#222222',
         color: '#ffffff',
         alignItems: 'flex-start',
         justifyContent: 'center',
         paddingTop: 10,
         marginHorizontal: 0,
         marginTop: 0,
-        marginBottom: 10
+        marginBottom: 0,
+        borderBottomWidth: 1,
+        borderBottomColor: '#444444'
     },
     font: {
-        color: '#ffffff'
+        color: '#ddd'
     },
     title: {
-        color: '#ffffff',
+        color: '#ddd',
         textAlign: 'left',
         fontSize: 17,
         marginTop: 5
     },
     community: {
-        color: '#F95151',
+        color: '#ffd60a',
         textAlign: 'left',
         fontSize: 12
     },
     domain: {
-        color: '#888',
+        color: '#999',
         textAlign: 'left',
         fontSize: 12
     },
     timestamp: {
-        color: '#888',
+        color: '#999',
         textAlign: 'left',
         fontSize: 12
     },
@@ -270,7 +271,7 @@ const styles = StyleSheet.create({
     },
     markdown: {
         body: { 
-            backgroundColor: '#233447', 
+            backgroundColor: '#3a3a3a', 
             borderRadius: 3, 
             borderWidth: 0, 
             color: '#ffffff', 

@@ -24,7 +24,7 @@ const SideMenu = ({navigationRef, drawer}) => {
     let communityMod = siteData?.my_user?.moderates
   
     return (
-        <View style={[styles.container, styles.mainMenu]}>
+        <View style={styles.mainMenu}>
             {person &&
                 <View style={styles.bio}>
                     <Pressable
@@ -69,16 +69,12 @@ const SideMenu = ({navigationRef, drawer}) => {
   }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 16,
-    },
     mainMenu: {
         flex: 1,
-        backgroundColor: '#17212D',
+        backgroundColor: '#222',
         paddingTop: 75,
+        paddingHorizontal: 16,
+        paddingBottom: 16,
         alignItems: 'flex-start',
         justifyContent: 'flex-start',
     },
