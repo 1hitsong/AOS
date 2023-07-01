@@ -19,6 +19,7 @@ export default function UserProfile({navigation, route}) {
         SecureStore.setItemAsync(`server_instanceURI`, '')
         SecureStore.setItemAsync(`user_username`, '')
         SecureStore.setItemAsync(`server_jwt`, '')
+        navigation.navigate('LoginScreen')
     }
   
     return (

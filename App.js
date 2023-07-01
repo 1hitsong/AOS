@@ -38,9 +38,9 @@ const App = () => {
                     initialRouteName='LoginScreen'
                     screenOptions={{
                         headerStyle: {
-                            backgroundColor: '#233447',
+                            backgroundColor: '#2a2a2a',
                         },
-                        headerTintColor: '#fff',
+                        headerTintColor: '#d9d9d9',
                         headerTitleStyle: {
                             fontWeight: 'bold',
                         },
@@ -55,13 +55,13 @@ const App = () => {
                         options={({ navigation, route }) => ({
                             headerLeft: () => (
                                 <>
-                                    <Icon name='menu' type='MaterialIcons' color='#eee' onPress={() => drawer.current.openDrawer() } />
+                                    <Icon name='menu' type='MaterialIcons' color='#d9d9d9' onPress={() => drawer.current.openDrawer() } />
                                 </>
                             ),
                             headerRight: () => (
                                 <>
-                                    <Icon name='filter-list' type='MaterialIcons' color='#eee' onPress={() => dispatch(toggleFilterMenu()) } />
-                                    <Icon name='sort' type='MaterialIcons' color='#eee' onPress={() => dispatch(toggleSortMenu()) } />
+                                    <Icon name='filter-list' type='MaterialIcons' color='#d9d9d9' onPress={() => dispatch(toggleFilterMenu()) } />
+                                    <Icon name='sort' type='MaterialIcons' color='#d9d9d9' onPress={() => dispatch(toggleSortMenu()) } />
                                 </>
                             ),
                         })} 
@@ -75,13 +75,13 @@ const App = () => {
                             title: route.params.communityName,
                             headerLeft: () => (
                                 <>
-                                    <Icon name='menu' type='MaterialIcons' color='#eee' onPress={() => drawer.current.openDrawer() } />
+                                    <Icon name='menu' type='MaterialIcons' color='#d9d9d9' onPress={() => drawer.current.openDrawer() } />
                                 </>
                             ),
                             headerRight: () => (
                                 <>
-                                    <Icon name='filter-list' type='MaterialIcons' color='#eee' onPress={() => dispatch(toggleFilterMenu()) } />
-                                    <Icon name='sort' type='MaterialIcons' color='#eee' onPress={() => dispatch(toggleSortMenu()) } />
+                                    <Icon name='filter-list' type='MaterialIcons' color='#d9d9d9' onPress={() => dispatch(toggleFilterMenu()) } />
+                                    <Icon name='sort' type='MaterialIcons' color='#d9d9d9' onPress={() => dispatch(toggleSortMenu()) } />
                                 </>
                             ),
                         })} 
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
         padding: 16,
     },
     navigationContainer: {
-        backgroundColor: '#ecf0f1',
+        backgroundColor: '#000000',
     },
 })
 
