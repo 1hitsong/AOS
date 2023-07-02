@@ -1,6 +1,7 @@
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import updateLocale from 'dayjs/plugin/updateLocale'
+import localizedFormat from 'dayjs/plugin/localizedFormat'
 import utc from 'dayjs/plugin/utc'
 
 export function fuzzyTimeStamp(timestamp) {
@@ -26,4 +27,11 @@ export function fuzzyTimeStamp(timestamp) {
     })
 
     return dayjs(timestamp).utc(true).fromNow(true)
+}
+
+export function format(timestamp) {
+    dayjs.extend(utc)
+    dayjs.extend(localizedFormat)
+
+    return dayjs(timestamp).utc(true).format('LL')
 }
