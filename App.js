@@ -8,7 +8,8 @@ import { Provider } from 'react-redux'
 import { useDispatch } from 'react-redux'
 import { toggleSortMenu, toggleFilterMenu } from './store/appSlice'
 import SideMenu from './screens/components/SideMenu'
-import { DrawerLayoutAndroid, StyleSheet } from 'react-native'
+import { DrawerLayoutAndroid, StyleSheet, Pressable } from 'react-native'
+import { truncate } from './screens/helpers/textHelper'
 
 const Stack = createNativeStackNavigator()
 
@@ -53,15 +54,22 @@ const App = () => {
                         component={Home}
                         initialParams={{}}
                         options={({ navigation, route }) => ({
+                            headerTitleStyle:{
+                                fontSize: 17,
+                            },
                             headerLeft: () => (
-                                <>
-                                    <Icon name='menu' type='MaterialIcons' color='#d9d9d9' onPress={() => drawer.current.openDrawer() } />
-                                </>
+                                <Pressable style={[styles.headerButton, styles.alignLeft]} onPress={() => drawer.current.openDrawer() }>
+                                    <Icon name='menu' type='MaterialIcons' color='#d9d9d9' />
+                                </Pressable>
                             ),
                             headerRight: () => (
                                 <>
-                                    <Icon name='filter-list' type='MaterialIcons' color='#d9d9d9' onPress={() => dispatch(toggleFilterMenu()) } />
-                                    <Icon name='sort' type='MaterialIcons' color='#d9d9d9' onPress={() => dispatch(toggleSortMenu()) } />
+                                    <Pressable style={[styles.headerButton, styles.alignCenter]} onPress={() => dispatch(toggleFilterMenu()) }>
+                                        <Icon name='filter-list' type='MaterialIcons' color='#d9d9d9' />
+                                    </Pressable>
+                                    <Pressable style={[styles.headerButton, styles.alignCenter, styles.noMargin]} onPress={() => dispatch(toggleSortMenu()) }>
+                                        <Icon name='sort' type='MaterialIcons' color='#d9d9d9' />
+                                    </Pressable>
                                 </>
                             ),
                         })} 
@@ -72,16 +80,23 @@ const App = () => {
                         component={Community}
                         initialParams={{}}
                         options={({ navigation, route }) => ({
-                            title: route.params.communityName,
+                            title: truncate(route.params.communityName, 25),
+                            headerTitleStyle:{
+                                fontSize: 17,
+                            },
                             headerLeft: () => (
-                                <>
-                                    <Icon name='menu' type='MaterialIcons' color='#d9d9d9' onPress={() => drawer.current.openDrawer() } />
-                                </>
+                                <Pressable style={[styles.headerButton, styles.alignLeft]} onPress={() => drawer.current.openDrawer() }>
+                                    <Icon name='menu' type='MaterialIcons' color='#d9d9d9' />
+                                </Pressable>
                             ),
                             headerRight: () => (
                                 <>
-                                    <Icon name='filter-list' type='MaterialIcons' color='#d9d9d9' onPress={() => dispatch(toggleFilterMenu()) } />
-                                    <Icon name='sort' type='MaterialIcons' color='#d9d9d9' onPress={() => dispatch(toggleSortMenu()) } />
+                                    <Pressable style={[styles.headerButton, styles.alignCenter]} onPress={() => dispatch(toggleFilterMenu()) }>
+                                        <Icon name='filter-list' type='MaterialIcons' color='#d9d9d9' />
+                                    </Pressable>
+                                    <Pressable style={[styles.headerButton, styles.alignCenter, styles.noMargin]} onPress={() => dispatch(toggleSortMenu()) }>
+                                        <Icon name='sort' type='MaterialIcons' color='#d9d9d9' />
+                                    </Pressable>
                                 </>
                             ),
                         })} 
@@ -105,6 +120,22 @@ const styles = StyleSheet.create({
     navigationContainer: {
         backgroundColor: '#000000',
     },
+    alignLeft: {
+        alignItems: 'flex-start',
+        marginRight: 20
+    },
+    alignCenter: {
+        alignItems: 'center',
+        marginRight: 20
+    },
+    noMargin: {
+        marginRight: 0,
+    },
+    headerButton: {
+        height: 40,
+        width: 40,
+        justifyContent: 'center',
+    }
 })
 
 export default AppWrapper = () =>
