@@ -1,4 +1,4 @@
-import React, { useState, memo, useEffect } from 'react'
+import React, { useState, memo } from 'react'
 import { StyleSheet, View, Text, Image, Pressable, Modal, Share } from 'react-native'
 import { Card, Icon } from '@rneui/themed'
 import Markdown from '@jonasmerlin/react-native-markdown-display'
@@ -16,7 +16,7 @@ function PostCard({data, navigation}) {
     let postTimeStamp
 
     if (data.post.published) {
-        postTimeStamp = ` • ` + fuzzyTimeStamp(data.post.published)
+        postTimeStamp = fuzzyTimeStamp(data.post.published)
     }
 
     if (data.post.url) {
@@ -169,9 +169,15 @@ function PostCard({data, navigation}) {
                             </Text>
                             <View style={{flexDirection:'row', alignItems:'center'}}>
                                 <Text style={styles.domain}>{postDomain}</Text>
+                                {postDomain && <Text style={styles.dot}>•</Text> }
                                 <Text style={styles.timestamp}>{postTimeStamp}</Text>
                             </View>
                         </View>
+                    </View>
+
+                    <View style={styles.commentCount}>
+                        <Icon size={15} name='comment' type='MaterialIcons' color='#eee' />
+                        <Text style={styles.comments}>{data.counts.comments}</Text>
                     </View>
 
                     <View style={{flexDirection:'row', alignItems:'flex-start'}}>
@@ -188,17 +194,14 @@ function PostCard({data, navigation}) {
                             </View>
                         }
                     </View>
-                
-                    <View style={styles.counts}>
-                        <Text style={styles.score}>{data.counts.score}</Text>
-                        <Text style={styles.dot}>•</Text>
-                        <Text style={styles.comments}>{data.counts.comments} comments</Text>
-                    </View>
 
                     {postContent}
 
                     <View style={styles.actions}>
-                        <Icon onPress={() => onVote(1)} name='thumb-up' type='MaterialIcons' color={upVoteIconColor} />
+                        <View style={styles.scoreView}>
+                            <Icon onPress={() => onVote(1)} name='thumb-up' type='MaterialIcons' color={upVoteIconColor} />
+                            <Text style={styles.scoreNumber}>{data.counts.score}</Text>
+                        </View>
                         <Icon onPress={() => onVote(-1)} name='thumb-down' type='MaterialIcons' color={downVoteIconColor} />
                         <Icon onPress={onFavorite} name='bookmark' type='MaterialIcons' color={favoriteIconColor} />
                         <Icon name='content-copy' type='MaterialIcons' color='#eee' />
@@ -260,23 +263,46 @@ const styles = StyleSheet.create({
         alignItems: 'baseline',
         marginTop: 10
     },
-    score: {
-        color: '#ddd',
-        fontSize: 22,
-        marginRight: 5
-    },
-    dot: {
-        color: '#ddd',
-        marginRight: 5
+    commentCount: {
+        borderColor: '#444',
+        borderWidth: 1,
+        flexDirection:'row',
+        alignItems: 'center',
+        paddingVertical: 5,
+        paddingHorizontal: 15,
+        borderRadius: 5,
+        maxWidth: 100,
+        position: 'absolute',
+        right: 0
     },
     comments: {
         color: '#ddd',
         fontSize: 15,
+        marginLeft: 5
+    },
+    scoreView: {
+        backgroundColor: '#333',
+        flexDirection:'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        paddingVertical: 5,
+        paddingHorizontal: 15,
+        borderRadius: 5,
+        maxWidth: 100
+    },
+    scoreNumber: {
+        color: '#ddd',
+        fontSize: 14,
+        marginLeft: 10
+    },
+    dot: {
+        color: '#555',
+        marginHorizontal: 5
     },
     markdown: {
         body: { 
             backgroundColor: '#3a3a3a', 
-            borderRadius: 3, 
+            borderRadius: 5, 
             borderWidth: 0, 
             color: '#ffffff', 
             paddingHorizontal: 7, 
@@ -284,7 +310,7 @@ const styles = StyleSheet.create({
             flexWrap: 'wrap' 
         },
         blockquote: { 
-            backgroundColor: '#304864' 
+            backgroundColor: '#4a4a4a' 
         },
         list_item: { 
             color: '#ffffff'
@@ -303,19 +329,21 @@ const styles = StyleSheet.create({
         borderRadius: 5
     },
     thumbnail: {
-        width: 50,
-        height: 50,
-        marginLeft: 10
+        width: 75,
+        height: 75,
+        marginLeft: 10,
+        marginVertical: 10,
+        borderRadius: 5
     },
     titleShareWidth: {
-        width: '85%'
+        width: '78%'
     },
     titleFullWidth: {
         width: '100%'
     },
     thumbnailContainer: {
         justifyContent: 'flex-start',
-        width: '15%'
+        width: '22%'
     },
     centeredView: {
         flex: 1,
