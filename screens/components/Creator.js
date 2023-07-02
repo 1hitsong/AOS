@@ -1,6 +1,5 @@
 import React from 'react';
 import {View, Text, StyleSheet, Image, Button} from 'react-native';
-import CommentReactions from './CommentReactions';
 
 const Creator = ({ creator, navigation }) => {
     

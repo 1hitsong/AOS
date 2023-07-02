@@ -68,3 +68,20 @@ export async function blockCommunity(props) {
         block: block
     })
 }
+
+export async function fetchPostComments(props) {
+    const {postID} = props
+
+    const server = await init(await SecureStore.getItemAsync('server_instanceURI'))
+
+    try {
+        return server.client.getComments({
+            auth: await SecureStore.getItemAsync('server_jwt'),
+            post_id: postID,
+            limit: 15
+        })
+    }
+    catch (e) {
+        console.log(`Error`, e)
+    }
+}
