@@ -1,47 +1,46 @@
 import { StyleSheet, SafeAreaView, FlatList, View } from 'react-native';
 import React, { useState, useEffect } from 'react';
-import * as SecureStore from 'expo-secure-store';
 import PostCard from './components/PostCard';
 import Comment from './components/Comment';
-import Markdown from '@jonasmerlin/react-native-markdown-display';
+import { useRoute } from '@react-navigation/native';
+import { useDispatch } from 'react-redux';
+import { getPostComments, setPostData } from '../store/postSlice'
 
-const Item = (comment) => (
-  <View key={comment.data.comment.id} style={styles.item}>
-    <Markdown style={styles.title}>{comment.data.comment.content}</Markdown>
-  </View>
-);
+export default function SinglePost() {
+  const route = useRoute();
+  const postData = route.params?.postData;
+  const dispatch = useDispatch();
 
-export default function SinglePost({navigation, route}) {
-  let client = route.params.client
-
-  const [post, setPost] = useState();
   const [comments, setComments] = useState();
 
   useEffect(() => {
-    setPost(route.params.post)
-    fetchComments(route.params.post.post.id);
+    fetchPostAndComments();
   }, []);
 
-  const fetchComments = async (singlePostID) => {
-    let postComments = await client.getComments({
-      auth: await SecureStore.getItemAsync('server_jwt'),
-      post_id: singlePostID,
-      limit: 15
-    })
-
-    setComments(postComments)
-  }
+  const fetchPostAndComments = async () => {
+    try {
+      const responses = await Promise.all([
+        dispatch(setPostData(postData)),
+        dispatch(getPostComments(postData.post.id))
+      ]);
+      
+      const commentsData = responses[1].payload;
+      setComments(commentsData);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const renderComment = ({ item }) => <Comment comment={item} />;
   
   return (
     <SafeAreaView style={styles.container}>
-      {comments && comments.comments && 
+      {comments && 
         <FlatList
           ListHeaderComponent={() => {
-            return (<PostCard key={post.post.id} data={post} />)
+            return (<PostCard key={postData.post.id} data={postData} />)
           }}
-          data={comments.comments}
+          data={comments}
           renderItem={renderComment}
           keyExtractor={item => item.comment.id}
         />

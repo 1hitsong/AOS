@@ -149,7 +149,7 @@ function PostCard(props) {
         </View>
       </Modal>
 
-      <Pressable key={postData.post.id} onPress={ () => navigation.navigate('SinglePostScreen') }>
+      <Pressable key={postData.post.id} onPress={ () => navigation.navigate('SinglePostScreen', { postData }) }>
         <Card containerStyle={styles.container}>
           <View style={{flexDirection:'row', alignItems:'center'}}>
             { postData.community.icon &&
