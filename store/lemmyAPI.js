@@ -69,9 +69,7 @@ export async function blockCommunity(props) {
     })
 }
 
-export async function fetchPostComments(props) {
-    const {postID} = props
-
+export async function fetchPostComments(postID) {
     const server = await init(await SecureStore.getItemAsync('server_instanceURI'))
 
     try {
