@@ -29,6 +29,7 @@ const styles = StyleSheet.create({
     },
     name: {
         flex: 1,
+        color: '#ffffff',
     },
 });
 

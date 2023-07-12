@@ -10,7 +10,6 @@ export const getPostData = createAsyncThunk(
   'post/fetchPost',
   async (postId) => {
     const response = await fetchPostData(postId);
-    console.log(`fetch post response: `, response);
     return response;
   }
 );
