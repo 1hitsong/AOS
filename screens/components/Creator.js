@@ -1,5 +1,6 @@
 import React from 'react';
 import {View, Text, StyleSheet, Image, Button} from 'react-native';
+import CommentReactions from './CommentReactions';
 
 const Creator = ({ creator, navigation }) => {
     
@@ -8,12 +9,9 @@ const Creator = ({ creator, navigation }) => {
                 <Image 
                     source={{uri: creator.avatar}}
                     style={styles.image}
-                />
-                <Text style={styles.name}>{creator.name}</Text>
-                <Button 
-                    title="View Profile"
                     onPress={() => navigation.navigate('Profile', { profileId: creator.user_id })}
                 />
+                <Text style={styles.name}>{creator.name}</Text>
             </View>
         )
     }
@@ -31,6 +29,7 @@ const styles = StyleSheet.create({
     },
     name: {
         flex: 1,
+        color: '#ffffff',
     },
 });
 

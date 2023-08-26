@@ -4,9 +4,9 @@ import * as SecureStore from 'expo-secure-store';
 import {init} from '../store/client'
 
 export default function Login({navigation, route}) {
-  const [instanceURI, setInstanceURI] = useState(``);
   const [username, setUsername] = useState(``);
   const [password, setPassword] = useState(``);
+  const [instanceURI, setInstanceURI] = useState(``);
 
   useEffect(() => {
     async function isLoggedIn() {

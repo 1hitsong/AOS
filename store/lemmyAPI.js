@@ -69,3 +69,141 @@ export async function blockCommunity(props) {
         block: block
     })
 }
+
+export async function fetchPostComments(postID) {
+    const server = await init(await SecureStore.getItemAsync('server_instanceURI'))
+
+    try {
+        return server.client.getComments({
+            auth: await SecureStore.getItemAsync('server_jwt'),
+            post_id: postID,
+            limit: 15
+        })
+    }
+    catch (e) {
+        console.log(`Error`, e)
+    }
+}
+
+export async function fetchComment(commentID) {
+    const server = await init(await SecureStore.getItemAsync('server_instanceURI'))
+
+    try{
+        return server.client.getComment({
+            auth: await SecureStore.getItemAsync('server_jwt'),
+            id: commentID,
+        })
+    }
+    catch (e) {
+        console.log(`Error`, e)
+    }
+}
+
+export async function upvoteComment(commentID) {
+    const server = await init(await SecureStore.getItemAsync('server_instanceURI'))
+
+    try {
+        return server.client.likeComment({
+            auth: await SecureStore.getItemAsync('server_jwt'),
+            comment_id: commentID,
+            score: 1
+        })
+    }
+    catch (e) {
+        console.log(`Error`, e)
+    }
+}
+
+export async function downvoteComment(commentID) {
+    const server = await init(await SecureStore.getItemAsync('server_instanceURI'))
+
+    try {
+        return server.client.likeComment({
+            auth: await SecureStore.getItemAsync('server_jwt'),
+            comment_id: commentID,
+            score: -1
+        })
+    }
+    catch (e) {
+        console.log(`Error`, e)
+    }
+}
+
+export async function unvoteComment(commentID) {
+    const server = await init(await SecureStore.getItemAsync('server_instanceURI'))
+
+    try {
+        return server.client.likeComment({
+            auth: await SecureStore.getItemAsync('server_jwt'),
+            comment_id: commentID,
+            score: 0
+        })
+    }
+    catch (e) {
+        console.log(`Error`, e)
+    }
+}
+
+export async function saveComment(commentID) {
+    const server = await init(await SecureStore.getItemAsync('server_instanceURI'))
+
+    try {
+        return server.client.saveComment({
+            auth: await SecureStore.getItemAsync('server_jwt'),
+            comment_id: commentID,
+            save: true
+        })
+    }
+    catch (e) {
+        console.log(`Error`, e)
+    }
+}
+
+export async function unsaveComment(commentID) {
+    const server = await init(await SecureStore.getItemAsync('server_instanceURI'))
+
+    try {
+        return server.client.saveComment({
+            auth: await SecureStore.getItemAsync('server_jwt'),
+            comment_id: commentID,
+            save: false
+        })
+    }
+    catch (e) {
+        console.log(`Error`, e)
+    }
+}
+
+export async function commentOnPost(props) {
+    const {postID, body} = props
+
+    const server = await init(await SecureStore.getItemAsync('server_instanceURI'))
+
+    try {
+        return server.client.createComment({
+            auth: await SecureStore.getItemAsync('server_jwt'),
+            post_id: postID,
+            body: body
+        })
+    }
+    catch (e) {
+        console.log(`Error`, e)
+    }
+}
+
+export async function commentOnComment(props) {
+    const {commentID, body} = props
+
+    const server = await init(await SecureStore.getItemAsync('server_instanceURI'))
+
+    try {
+        return server.client.createComment({
+            auth: await SecureStore.getItemAsync('server_jwt'),
+            comment_id: commentID,
+            body: body
+        })
+    }
+    catch (e) {
+        console.log(`Error`, e)
+    }
+}
