@@ -1,4 +1,4 @@
-import { StyleSheet, Text, SafeAreaView, ScrollView, TextInput, Button } from 'react-native';
+import { StyleSheet, SafeAreaView, ScrollView, TextInput, Button } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import {init} from '../store/client'
@@ -50,9 +50,9 @@ export default function Login({navigation, route}) {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
-        <TextInput style={styles.textInput} id='uri' placeholder="Instance URI" onChangeText={(text) => setInstanceURI(text)} value={instanceURI} />
-        <TextInput style={styles.textInput} id='username' placeholder="Username or Email" onChangeText={(text) => setUsername(text)} value={username} />
-        <TextInput style={styles.textInput} id='password' placeholder="Password" onChangeText={(text) => setPassword(text)} value={password} />
+        <TextInput style={styles.textInput} id='uri' autoCapitalize="none" inputMode="url" placeholder="Instance URI" onChangeText={(text) => setInstanceURI(text)} value={instanceURI} />
+        <TextInput style={styles.textInput} id='username' autoCapitalize="none" placeholder="Username or Email" onChangeText={(text) => setUsername(text)} value={username} />
+        <TextInput style={styles.textInput} id='password' autoCapitalize="none" placeholder="Password" onChangeText={(text) => setPassword(text)} value={password} />
         <Button onPress={onLogin} title='Login' />
       </ScrollView>
     </SafeAreaView>
