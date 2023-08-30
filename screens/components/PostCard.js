@@ -140,7 +140,7 @@ function PostCard({data, navigation}) {
                 </View>
             </Modal>
 
-            <Pressable key={data.post.id} onPress={ () => navigation.navigate('SinglePostScreen') }>
+            <Pressable key={data.post.id} onPress={ () => navigation.navigate('SinglePostScreen', { postData: data }) }>
                 <Card containerStyle={styles.container}>
                     <View style={{flexDirection:'row', alignItems:'flex-start'}}>
                         { data.community.icon &&
@@ -174,23 +174,6 @@ function PostCard({data, navigation}) {
                             </View>
                         </View>
                     </View>
-
-      <Pressable key={postData.post.id} onPress={ () => navigation.navigate('SinglePostScreen', { postData }) }>
-        <Card containerStyle={styles.container}>
-          <View style={{flexDirection:'row', alignItems:'center'}}>
-            { postData.community.icon &&
-              <Pressable onLongPress={ () => setModalVisible(true) }>
-                <Image
-                  style={styles.image}
-                  resizeMode="cover"
-                  source={{ uri: postData.community.icon }}
-                />
-              </Pressable>
-            }
-            <Text style={styles.community}>{postData.community.name}</Text>
-            <Text style={styles.domain}>{postDomain}</Text>
-            <Text style={styles.timestamp}>{postTimeStamp}</Text>
-          </View>
 
                     <View style={{flexDirection:'row', alignItems:'flex-start'}}>
                         <View style={titleContainerType}>
