@@ -4,10 +4,13 @@
     </a>
 </p>
 <div align="center">
-<h1 style="border:0;margin-bottom:0">AOS</h1>
-<p style="border-bottom:1px solid #555;width:300px"><em>(Ace of Spades)</em></p>
-<h3>A React Native Lemmy client</h3>
-<h4>WIP! You can try using it, just don't get mad if something doesn't work correctly.</h3>
+    <h1 style="border:0;margin-bottom:0">AOS</h1>
+    <p style="border-bottom:1px solid #555;width:300px"><em>(Ace of Spades)</em></p>
+    <h3>A React Native Lemmy client</h3>
+    <a href="https://raw.githubusercontent.com/1hitsong/AOS/master/static/screenshot.png">
+        <img height="375" width="175" alt="AOS" src="https://raw.githubusercontent.com/1hitsong/AOS/master/static/screenshot.png"/>
+    </a>
+    <h4>WIP! You can try using it, just don't get mad if something doesn't work correctly.</h3>
 </div>
 
 ---
